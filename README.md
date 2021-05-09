@@ -106,21 +106,53 @@ lls.confirmOverTime（确认超时时间，单位秒）
 
 demo参考
 
-
-
 client
 
-![](\img\20210509101459.png)
+```
+@RestController
+@RequestMapping("/demo")
+public class TestController {
+    @Autowired
+    private DemoService demoService;
+    private AtomicInteger integer=new AtomicInteger(1);
+    @RequestMapping("demo1")
+    public String getRpc(){
+        return demoService.getDemo(integer.getAndIncrement()+"");
+    }
+    @RequestMapping("demo2")
+    public Map<String, String> getRpc1(){
+        AsyncResult<Map<String, String>> result = demoService.getMap(integer.getAndIncrement() + "");
+        return result.getResult();
+    }
+}
 
-![](\img\20210509101530.png)
 
+@IClient
+public interface DemoService {
 
+    String getDemo(String ip);
+    @IAsync
+    AsyncResult<Map<String,String>> getMap(String id);
+}
+```
 
 serve
 
-![](\img\20210509101537.png)
+```
+@Service
+public class DemoService {
+    public String getDemo(String ip){
+        return ip+":rpc调用成功";
+    }
+    public Map<String,String> getMap(String id){
+        Map<String,String> map=new HashMap<>();
+        map.put("id",id);
+        map.put("name","getMap");
+        return map;
+    }
+}
 
-
+```
 
 有问题，可以通过邮箱1207123678@qq.com联系我
 
