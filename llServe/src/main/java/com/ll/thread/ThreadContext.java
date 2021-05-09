@@ -10,12 +10,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author liang.liu
  * @date createTime：2021/5/2 16:45
  */
-public class ThreadContext {
+public final class ThreadContext {
     private AtomicLong freeTime;
     private AtomicLong expireTime;
     private AtomicInteger runThreadSize;
     private AtomicInteger coreSize;
-    private static ThreadContext threadContext;
+    private static volatile ThreadContext threadContext;
     private ThreadContext(Long expireTime,Integer coreSize) {
         this.coreSize=new AtomicInteger(coreSize);
         this.expireTime = new AtomicLong(expireTime);

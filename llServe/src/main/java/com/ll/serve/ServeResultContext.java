@@ -20,11 +20,11 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author liang.liu
  * @date createTime：2021/5/3 14:20
  */
-public class ServeResultContext {
+public final class ServeResultContext {
     private Map<String, LinkedBlockingQueue<BeanInfo>> resultMap;
     private Map<String, Integer> readAndWriteOverTime;
     private ObjectMapper mapper;
-    private static ServeResultContext serveResultContext;
+    private static volatile ServeResultContext serveResultContext;
     private ServeResultContext() {
         resultMap=new ConcurrentHashMap<>();
         readAndWriteOverTime=new ConcurrentHashMap<>();

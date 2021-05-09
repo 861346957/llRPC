@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
  * @author liang.liu
  * @date createTime：2021/5/1 15:07
  */
-public class ResultContext {
-    private static ResultContext resultContext;
+public final class ResultContext {
+    private static volatile ResultContext resultContext;
     private ObjectMapper objectMapper=new ObjectMapper();
     private Map<String, ResultInfo> map=new ConcurrentHashMap<>();
     private ResultContext() {

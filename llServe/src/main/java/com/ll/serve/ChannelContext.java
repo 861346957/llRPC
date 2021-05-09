@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author liang.liu
  * @date createTime：2021/5/4 10:10
  */
-public class ChannelContext {
+public final class ChannelContext {
     private static Logger logger= LoggerFactory.getLogger(ChannelContext.class);
-    private static ChannelContext channelContext;
+    private static volatile ChannelContext channelContext;
     private  Map<String, ChannelHandlerContext> channelList;
 
     private ChannelContext() {

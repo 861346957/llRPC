@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author liang.liu
  * @date createTime：2021/5/1 9:20
  */
-public class ConfirmContext<T,Q> {
+public final class ConfirmContext<T,Q> {
     private  Map<String, ConfirmMessage<T,Q>> noAckResult;
-    private static ConfirmContext confirmContext;
+    private static volatile ConfirmContext confirmContext;
     private static Integer isConfirm;
     private static Integer confirmOverTime;
     private Boolean awaken;
