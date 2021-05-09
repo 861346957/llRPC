@@ -98,6 +98,10 @@ public class ClientContext {
      * 保存超时的消息删除，超过RETRY_MESSAGE_TIME时间未确认消息重试发送
      */
     private void startMissingMessageRetry(){
+        if(!ConfirmContext.getInstance(0,0).isConfirm()){
+            return;
+        }
+
         ThreadUtils.start(new Runnable() {
             @Override
             public void run() {
