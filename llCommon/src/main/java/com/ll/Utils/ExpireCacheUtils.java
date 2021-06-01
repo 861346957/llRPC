@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class ExpireCacheUtils<T> {
     private static String SEPARATORS="-";
-    private static Map<String,CacheData> EXPIRE_CACHE_DATA = new HashMap<>();
+    private static volatile Map<String,CacheData> EXPIRE_CACHE_DATA = new HashMap<>();
 
     /**
      *
@@ -41,6 +41,24 @@ public class ExpireCacheUtils<T> {
                         expire=start+expire;
                     }
                     cacheData = new CacheData<T>(data,start, expire);
+                    EXPIRE_CACHE_DATA.put(key,cacheData);
+                }
+            }
+        }
+        return cacheData.getData();
+    }
+
+    public static  <T> T getData(String key, Load<T> load, Long second){
+        CacheData<T> cacheData;
+        cacheData = EXPIRE_CACHE_DATA.get(key);
+        if(cacheData==null || cacheData.getExpire()<System.currentTimeMillis()){
+            synchronized (key.intern()){
+                cacheData = EXPIRE_CACHE_DATA.get(key);
+                if(cacheData==null || cacheData.getExpire()<System.currentTimeMillis()){
+                    T data = load.loadData();
+                    long start=System.currentTimeMillis();
+                    second=start+second;
+                    cacheData = new CacheData<T>(data,start, second);
                     EXPIRE_CACHE_DATA.put(key,cacheData);
                 }
             }

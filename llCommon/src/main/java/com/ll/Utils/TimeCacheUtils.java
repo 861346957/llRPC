@@ -12,6 +12,6 @@ public class TimeCacheUtils {
             public Long loadData() {
                 return System.currentTimeMillis();
             }
-        },1);
+        },100L);
     }
 }

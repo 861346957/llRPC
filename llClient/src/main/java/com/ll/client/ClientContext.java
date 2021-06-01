@@ -123,18 +123,24 @@ public class ClientContext {
                     if(noAckResult.size()==0){
                         continue;
                     }
-                    System.out.println("发送失败消息线程已唤醒");
+                    logger.info("发送失败消息线程已唤醒");
                     Iterator<Map.Entry<String, ConfirmMessage<TcpClient, BeanInfo>>> iterator = noAckResult.entrySet().iterator();
                     while (iterator.hasNext()){
                         ConfirmMessage<TcpClient, BeanInfo> confirmMessage = iterator.next().getValue();
                         BeanInfo beanInfo=confirmMessage.getMessage();
+                        //日志
+                        if(beanInfo==null || instance==null){
+                            logger.info("beanInfo:{};instance:{}",beanInfo,instance);
+                            iterator.remove();
+                            continue;
+                        }
                         if(beanInfo.getCreateTime()+instance.getConfirmOverTime()<= TimeCacheUtils.getCacheTime()){
-                            System.out.println("超时任务删除");
+                            logger.info("超时任务删除");
                             iterator.remove();
                             continue;
                         }
                         if(beanInfo.getCreateTime()+ClientConstant.RETRY_MESSAGE_TIME<TimeCacheUtils.getCacheTime()){
-                            System.out.println("发送消息："+StringCustomUtils.getJsonByObject(beanInfo));
+                            logger.info("发送消息："+StringCustomUtils.getJsonByObject(beanInfo));
                             confirmMessage.getChannel().sendMessage(beanInfo,false);
                         }
                     }

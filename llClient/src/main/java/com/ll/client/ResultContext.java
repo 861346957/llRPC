@@ -1,6 +1,7 @@
 package com.ll.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.Utils.TimeCacheUtils;
 import com.ll.entity.ResultInfo;
 import com.ll.network.TcpClient;
 
@@ -36,6 +37,13 @@ public final class ResultContext {
         }
     }
     public ResultInfo getResult(String id, TcpClient client){
+        Long start= TimeCacheUtils.getCacheTime();
+        Long second=100L;
+        while (start+second>TimeCacheUtils.getCacheTime()){
+            if(map.containsKey(id)){
+                return map.remove(id);
+            }
+        }
         for (;;){
             if(map.containsKey(id)){
                return map.remove(id);
