@@ -31,7 +31,7 @@ client的maven引用
 	<dependency>
 	    <groupId>com.github.861346957.llRPC</groupId>
 	    <artifactId>llClient</artifactId>
-	    <version>1.0-SNAPSHOT</version>
+	    <version>1.0.1-SNAPSHOT</version>
 	</dependency>
 </dependencys>
 ```
@@ -49,7 +49,7 @@ serve的maven引用
 	<dependency>
 	    <groupId>com.github.861346957.llRPC</groupId>
 	    <artifactId>llServe</artifactId>
-	    <version>1.0-SNAPSHOT</version>
+	    <version>1.0.1-SNAPSHOT</version>
 	</dependency>
 </dependencys>
 ```

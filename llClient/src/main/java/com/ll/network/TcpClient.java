@@ -3,6 +3,7 @@ package com.ll.network;
 import com.ll.Utils.RetryUtils;
 import com.ll.Utils.StringCustomUtils;
 import com.ll.Utils.TimeCacheUtils;
+import com.ll.client.ResultContext;
 import com.ll.constant.ClientConstant;
 import com.ll.context.ConfirmContext;
 import com.ll.entity.BeanInfo;
@@ -13,6 +14,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -52,7 +54,7 @@ public class TcpClient {
     }
 
     public String getName(){
-       return StringCustomUtils.getString(ClientConstant.DEFAULT_PORT_SEPARATOR,host,port);
+        return StringCustomUtils.getString(ClientConstant.DEFAULT_PORT_SEPARATOR,host,port);
     }
     public  void whetherConnect(){
         if(!isOpen()){
@@ -87,7 +89,7 @@ public class TcpClient {
         return false;
     }
     public void sendMessage(final BeanInfo beanInfo){
-       sendMessage(beanInfo,true);
+        sendMessage(beanInfo,true);
     }
     public void sendMessage(final BeanInfo beanInfo,Boolean isAckResult){
         try{
@@ -95,6 +97,9 @@ public class TcpClient {
             final  ConfirmContext<TcpClient, BeanInfo> instance = ConfirmContext.getInstance(this, beanInfo);
             if(!beanInfo.getHeartbeat() && instance.isConfirm() && isAckResult){
                 instance.addNoAckResult(beanInfo.getId(),new ConfirmMessage(this,beanInfo));
+            }
+            if(!StringUtils.isEmpty(beanInfo.getId())){
+                ResultContext.getInstance().addLock(beanInfo.getId(),new Object());
             }
             ChannelFuture future = sendMessageAndCreateTime(beanInfo);
             if(!beanInfo.getHeartbeat() && instance.isConfirm()){
