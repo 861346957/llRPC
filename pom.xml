@@ -8,6 +8,7 @@
     <artifactId>llRPC</artifactId>
     <packaging>pom</packaging>
     <version>1.0.1-SNAPSHOT</version>
+
     <modules>
         <module>llClient</module>
         <module>llServe</module>
