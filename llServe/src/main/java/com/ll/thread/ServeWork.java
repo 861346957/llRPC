@@ -1,5 +1,6 @@
 package com.ll.thread;
 
+import com.ll.Utils.ExpireCacheUtils;
 import com.ll.Utils.PollingUtils;
 import com.ll.entity.BeanInfo;
 import com.ll.entity.Count;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 
@@ -24,7 +26,8 @@ public class ServeWork extends Thread {
     private Thread thread;
     private ThreadFactory threadFactory;
     private static Logger logger = LoggerFactory.getLogger(ServeWork.class);
-
+    private static Random random=new Random();
+    private static Integer interval=5;
     public ServeWork(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
         thread = initThread();
@@ -41,7 +44,7 @@ public class ServeWork extends Thread {
                     if (ThreadContext.getInstance().isOverTime() && ThreadContext.getInstance().isClose()) {
                         break;
                     }
-                    Thread.sleep(100L);
+                    Thread.sleep(random.nextInt(getRandomNumber()));
                     continue;
                 }
                 ThreadContext.getInstance().setFreeTime(0);
@@ -53,7 +56,14 @@ public class ServeWork extends Thread {
         }
 
     }
-
+    private Integer getRandomNumber(){
+        return ExpireCacheUtils.getData("getRandomNumber", new ExpireCacheUtils.Load<Integer>() {
+            @Override
+            public Integer loadData() {
+                return ThreadContext.getInstance().getRunThreadSize()*interval;
+            }
+        },1);
+    }
     private Thread initThread() {
         return threadFactory.newThread(this);
     }
@@ -66,7 +76,7 @@ public class ServeWork extends Thread {
         BeanInfo poll = null;
         String key = null;
         List<TaskQueue> taskQueueList = ServeResultContext.getInstance().getTaskQueueList();
-        Map<String, LinkedBlockingQueue<BeanInfo>> resultMap = ServeResultContext.getInstance().getResultMap();
+        //Map<String, LinkedBlockingQueue<BeanInfo>> resultMap = ServeResultContext.getInstance().getResultMap();
         synchronized (ServeWork.class) {
             for (int i = 0; i < taskQueueList.size(); i++) {
                 Integer polling = PollingUtils.getPolling(count, taskQueueList.size(), count);

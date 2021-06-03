@@ -35,7 +35,9 @@ public class ResultInfo implements Serializable {
         this.status = status;
         this.errorMessage = errorMessage;
     }
-
+    public static ResultInfo getErrorResultInfo(String id,String  errorMessage){
+        return new ResultInfo(id,null,ClientConstant.FAIL,errorMessage);
+    }
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }

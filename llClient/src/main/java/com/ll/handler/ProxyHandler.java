@@ -44,7 +44,7 @@ public class ProxyHandler<T> implements InvocationHandler {
         if(method.isAnnotationPresent(IAsync.class)){
             return AsyncResult.createAsyncResult(id,client);
         }else{
-            ResultInfo resultInfo=ResultContext.getInstance().getResult(id,client);
+            ResultInfo resultInfo=ResultContext.getInstance().getResult(id,null);
             if(ClientConstant.FAIL.equals(resultInfo.getStatus())){
                 log.info("execute method is error:"+resultInfo.getErrorMessage());
             }

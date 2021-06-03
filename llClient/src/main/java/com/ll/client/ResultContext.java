@@ -1,6 +1,7 @@
 package com.ll.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.constant.ClientConstant;
 import com.ll.entity.ResultInfo;
 import com.ll.network.TcpClient;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public final class ResultContext {
             }
         }
     }
-    public ResultInfo getResult(String id, TcpClient client){
+    public ResultInfo getResult(String id, Long overTime){
         Object lock = getLock(id);
         synchronized (lock){
             if(map.containsKey(id)){
@@ -59,7 +60,7 @@ public final class ResultContext {
                 return map.remove(id);
             }
             try {
-                lock.wait();
+                lock.wait(overTime == null ? ClientConstant.METHOD_WAIT_TIME : overTime);
             } catch (InterruptedException e) {
                 log.info("getResult thread is interrupted");
             }
@@ -69,7 +70,7 @@ public final class ResultContext {
             removeLock(id);
             return map.remove(id);
         }
-        return null;
+        return ResultInfo.getErrorResultInfo(id,id+":method is overTime");
 //        Long start= TimeCacheUtils.getCacheTime();
 //        Long second=100L;
 //        while (start+second>TimeCacheUtils.getCacheTime()){

@@ -32,4 +32,5 @@ public interface ClientConstant {
     Integer CONFIRM_OVER_TIME=90;
     Long WAIT_ACK_TIME=15*1000L;
     Long RETRY_MESSAGE_TIME=3000L;
+    Long METHOD_WAIT_TIME=1000L*60*60*6;
 }

@@ -23,7 +23,10 @@ public class AsyncResult<T> {
         return new AsyncResult(key,client);
     }
     public T getResult(){
-        ResultInfo resultInfo= ResultContext.getInstance().getResult(key,client);
+        return getResult(null);
+    }
+    public T getResult(Long overTime){
+        ResultInfo resultInfo= ResultContext.getInstance().getResult(key,overTime);
         if(ClientConstant.FAIL.equals(resultInfo.getStatus())){
             log.info("execute method is error:"+resultInfo.getErrorMessage());
         }

@@ -41,7 +41,7 @@ public class AsyncProxyHandler <T> implements InvocationHandler {
         TcpClient client = ClientContext.getClinetContext().getClient(iClientInfo.getProject());
         client.sendMessage(beanInfo);
         if(method.isAnnotationPresent(ISync.class)){
-            ResultInfo resultInfo=ResultContext.getInstance().getResult(id,client);
+            ResultInfo resultInfo=ResultContext.getInstance().getResult(id,null);
             if(ClientConstant.FAIL.equals(resultInfo.getStatus())){
                 log.info("execute method is error:"+resultInfo.getErrorMessage());
             }
