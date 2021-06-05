@@ -92,41 +92,36 @@ public class TcpClient {
         sendMessage(beanInfo,true);
     }
     public void sendMessage(final BeanInfo beanInfo,Boolean isAckResult){
-        try{
-            whetherConnect();
-            final  ConfirmContext<TcpClient, BeanInfo> instance = ConfirmContext.getInstance(this, beanInfo);
-            if(!beanInfo.getHeartbeat() && instance.isConfirm() && isAckResult){
-                instance.addNoAckResult(beanInfo.getId(),new ConfirmMessage(this,beanInfo));
-            }
-            if(!StringUtils.isEmpty(beanInfo.getId())){
-                ResultContext.getInstance().addLock(beanInfo.getId(),new Object());
-            }
-            ChannelFuture future = sendMessageAndCreateTime(beanInfo);
-            if(!beanInfo.getHeartbeat() && instance.isConfirm()){
-                future.addListener(new ChannelFutureListener(){
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        if(future.isSuccess()){
-                            System.out.println("消息发送成功："+StringCustomUtils.getJsonByObject(beanInfo));
-                            instance.remove(beanInfo.getId());
-                        }
-
-                    }
-                });
-            }
-            if(!beanInfo.getHeartbeat() && instance.isConfirm()&& !instance.getAwaken() && instance.getNoAckResult().size()>0){
-                synchronized (instance){
-                    if(!beanInfo.getHeartbeat() && instance.isConfirm() && !instance.getAwaken() && instance.getNoAckResult().size()>0){
-                        instance.notify();
-                        instance.setAwaken(true);
-                    }
-                }
-
-            }
-        }catch (Throwable t){
-            log.info("sendMessage is error:"+StringCustomUtils.getErrorMessage(t));
+        whetherConnect();
+        final  ConfirmContext<TcpClient, BeanInfo> instance = ConfirmContext.getInstance(this, beanInfo);
+        if(!beanInfo.getHeartbeat() && instance.isConfirm() && isAckResult){
+            instance.addNoAckResult(beanInfo.getId(),new ConfirmMessage(this,beanInfo));
         }
+        if(!StringUtils.isEmpty(beanInfo.getId())){
+            ResultContext.getInstance().addLock(beanInfo.getId(),new Object());
+        }
+        ChannelFuture future = sendMessageAndCreateTime(beanInfo);
+        if(!beanInfo.getHeartbeat() && instance.isConfirm()){
+            future.addListener(new ChannelFutureListener(){
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if(future.isSuccess()){
+                        System.out.println("消息发送成功："+StringCustomUtils.getJsonByObject(beanInfo));
+                        instance.remove(beanInfo.getId());
+                    }
 
+                }
+            });
+        }
+        if(!beanInfo.getHeartbeat() && instance.isConfirm()&& !instance.getAwaken() && instance.getNoAckResult().size()>0){
+            synchronized (instance){
+                if(!beanInfo.getHeartbeat() && instance.isConfirm() && !instance.getAwaken() && instance.getNoAckResult().size()>0){
+                    instance.notify();
+                    instance.setAwaken(true);
+                }
+            }
+
+        }
     }
     public ChannelFuture sendMessageAndCreateTime(BeanInfo beanInfo){
         beanInfo.setCreateTime(TimeCacheUtils.getCacheTime());

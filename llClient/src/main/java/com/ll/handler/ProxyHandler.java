@@ -40,13 +40,19 @@ public class ProxyHandler<T> implements InvocationHandler {
         String id=IdWorker.getIdWorker().nextId();
         BeanInfo beanInfo = new BeanInfo(id,className, method.getName(), args, method.getParameterTypes());
         TcpClient client = ClientContext.getClinetContext().getClient(iClientInfo.getProject());
-        client.sendMessage(beanInfo);
+        try {
+            client.sendMessage(beanInfo);
+        } catch (Throwable t) {
+            ResultContext.getInstance().removeLock(id);
+            throw t;
+        }
         if(method.isAnnotationPresent(IAsync.class)){
             return AsyncResult.createAsyncResult(id,client);
         }else{
             ResultInfo resultInfo=ResultContext.getInstance().getResult(id,null);
             if(ClientConstant.FAIL.equals(resultInfo.getStatus())){
                 log.info("execute method is error:"+resultInfo.getErrorMessage());
+                throw new RuntimeException(resultInfo.getErrorMessage());
             }
             return resultInfo.getResult() ;
         }

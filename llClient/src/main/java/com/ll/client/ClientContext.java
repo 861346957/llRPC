@@ -79,7 +79,11 @@ public class ClientContext {
                     Collection<List<TcpClient>> values = clientMap.values();
                     for (List<TcpClient> clients : values) {
                         for (TcpClient client : clients) {
-                            client.sendMessage(BeanInfo.createHeartbeatBean());
+                            try {
+                                client.sendMessage(BeanInfo.createHeartbeatBean());
+                            } catch (Throwable t) {
+                                logger.info(StringCustomUtils.getErrorMessage(t));
+                            }
                         }
                     }
                     try {
@@ -141,7 +145,11 @@ public class ClientContext {
                         }
                         if(beanInfo.getCreateTime()+ClientConstant.RETRY_MESSAGE_TIME<TimeCacheUtils.getCacheTime()){
                             logger.info("发送消息："+StringCustomUtils.getJsonByObject(beanInfo));
-                            confirmMessage.getChannel().sendMessage(beanInfo,false);
+                            try {
+                                confirmMessage.getChannel().sendMessage(beanInfo,false);
+                            } catch (Throwable t) {
+                                logger.info(StringCustomUtils.getErrorMessage(t));
+                            }
                         }
                     }
                     try {

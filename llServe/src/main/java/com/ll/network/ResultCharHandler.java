@@ -27,7 +27,7 @@ public class ResultCharHandler extends SimpleChannelInboundHandler<BeanInfo> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BeanInfo msg) throws Exception {
         System.out.println(mapper.writeValueAsString(msg));
-        ServeResultContext.getInstance().addResult(msg,ChannelContext.getKey(ctx));
+        ServeResultContext.getInstance().addResult(msg,ctx);
     }
 
     @Override

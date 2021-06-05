@@ -29,6 +29,7 @@ public class AsyncResult<T> {
         ResultInfo resultInfo= ResultContext.getInstance().getResult(key,overTime);
         if(ClientConstant.FAIL.equals(resultInfo.getStatus())){
             log.info("execute method is error:"+resultInfo.getErrorMessage());
+            throw new RuntimeException(resultInfo.getErrorMessage());
         }
         return (T)resultInfo.getResult() ;
     };

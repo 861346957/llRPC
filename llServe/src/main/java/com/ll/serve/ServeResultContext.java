@@ -6,10 +6,10 @@ import com.ll.Utils.ExpireCacheUtils;
 import com.ll.constant.ClientConstant;
 import com.ll.entity.BeanInfo;
 import com.ll.entity.TaskQueue;
-import com.ll.thread.ServeWork;
+import com.ll.thread.ServeLock;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,12 +74,15 @@ public final class ServeResultContext {
             e.printStackTrace();
         }
     }
-    public void addResult(BeanInfo beanInfo,String key){
+    public void addResult(BeanInfo beanInfo, ChannelHandlerContext ctx){
+        String key = ChannelContext.getKey(ctx);
         initReadAndWriteOverTime(key);
         if(beanInfo.getHeartbeat()){
             return;
         }
         resultMap.get(key).offer(beanInfo);
+        ServeLock.getInstance().notifyWait();
+        //System.out.println(beanInfo.getId()+"以消费");
     }
     public LinkedBlockingQueue<BeanInfo> getQueue(String key){
         return resultMap.get(key);
@@ -92,13 +95,24 @@ public final class ServeResultContext {
         return ExpireCacheUtils.getData("getTaskQueueList", new ExpireCacheUtils.Load<List<TaskQueue>>() {
             @Override
             public List<TaskQueue> loadData() {
-                List<TaskQueue> taskQueues=new ArrayList<>();
-                for (Map.Entry<String, LinkedBlockingQueue<BeanInfo>> entry : resultMap.entrySet()) {
-                    taskQueues.add(new TaskQueue(entry.getKey(),entry.getValue()));
-                }
-                return taskQueues;
+                return getTaskQueueListNoCache();
             }
         },10);
+    }
+    public  void setTaskQueueList(){
+        ExpireCacheUtils.setData("getTaskQueueList", new ExpireCacheUtils.Load<List<TaskQueue>>() {
+            @Override
+            public List<TaskQueue> loadData() {
+                return getTaskQueueListNoCache();
+            }
+        },10);
+    }
+    public List<TaskQueue> getTaskQueueListNoCache(){
+        List<TaskQueue> taskQueues=new ArrayList<>();
+        for (Map.Entry<String, LinkedBlockingQueue<BeanInfo>> entry : resultMap.entrySet()) {
+            taskQueues.add(new TaskQueue(entry.getKey(),entry.getValue()));
+        }
+        return taskQueues;
     }
     public Integer getQueueSize(){
         return ExpireCacheUtils.getData("getQueueSize", new ExpireCacheUtils.Load<Integer>() {

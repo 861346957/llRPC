@@ -53,6 +53,7 @@ public final class ChannelContext {
             ServeResultContext.getInstance().addQueue(key);
             //ThreadExecute.getInstance().executeAsync(channelHandlerContext,coreNumber);
         }
+        ServeResultContext.getInstance().setTaskQueueList();
         final ConfirmContext<ChannelContext, ResultInfo> confirmContext = ConfirmContext.getInstance(this, new ResultInfo());
         notify(confirmContext);
     }

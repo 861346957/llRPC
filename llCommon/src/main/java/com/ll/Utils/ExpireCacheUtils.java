@@ -47,7 +47,14 @@ public class ExpireCacheUtils<T> {
         }
         return cacheData.getData();
     }
-
+    public static <T> void setData(String key,Load<T>load,int second){
+        T data = load.loadData();
+        long start=System.currentTimeMillis();
+        long expire=getTimeMillis(second);
+        expire=start+expire;
+        CacheData<T>cacheData = new CacheData<T>(data,start, expire);
+        EXPIRE_CACHE_DATA.put(key,cacheData);
+    }
     public static  <T> T getData(String key, Load<T> load, Long second){
         CacheData<T> cacheData;
         cacheData = EXPIRE_CACHE_DATA.get(key);
