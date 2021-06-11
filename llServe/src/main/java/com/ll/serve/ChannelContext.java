@@ -42,7 +42,6 @@ public final class ChannelContext {
     public static String getKey(ChannelHandlerContext channelHandlerContext){
         InetSocketAddress address=(InetSocketAddress)channelHandlerContext.channel().remoteAddress();
         return address.getAddress().getHostAddress();
-        //return channelHandlerContext.channel().remoteAddress().toString().substring(1);
     }
 
     public void addChannelHandlerContext(ChannelHandlerContext channelHandlerContext){
@@ -51,7 +50,6 @@ public final class ChannelContext {
         synchronized (this){
             channelList.put(key,channelHandlerContext);
             ServeResultContext.getInstance().addQueue(key);
-            //ThreadExecute.getInstance().executeAsync(channelHandlerContext,coreNumber);
         }
         ServeResultContext.getInstance().setTaskQueueList();
         final ConfirmContext<ChannelContext, ResultInfo> confirmContext = ConfirmContext.getInstance(this, new ResultInfo());
@@ -77,16 +75,17 @@ public final class ChannelContext {
 
     }
     public void sendMessage(final ResultInfo resultInfo,String key) {
-       sendMessage(resultInfo,key,true);
+        sendMessage(resultInfo,key,true);
     }
     public void sendMessage(final ResultInfo resultInfo,String key,Boolean isAckResult){
         try{
             ChannelHandlerContext channelHandlerContext = channelList.get(key);
             final ConfirmContext<ChannelContext, ResultInfo> confirmContext = ConfirmContext.getInstance(this, resultInfo);
+            resultInfo.setCreateTime(TimeCacheUtils.getCacheTime());
             if(confirmContext.isConfirm() && isAckResult){
                 confirmContext.addNoAckResult(resultInfo.getId(),new ConfirmMessage(this,resultInfo,key));
             }
-            ChannelFuture future =sendMessageAndCreateTime(channelHandlerContext,resultInfo);
+            ChannelFuture future = sendMessageByContext(channelHandlerContext,resultInfo);
             if(future==null){
                 return;
             }
@@ -117,10 +116,9 @@ public final class ChannelContext {
 
         }
     }
-    public ChannelFuture sendMessageAndCreateTime(ChannelHandlerContext channelHandlerContext, ResultInfo resultInfo){
-        resultInfo.setCreateTime(TimeCacheUtils.getCacheTime());
+    public ChannelFuture sendMessageByContext(ChannelHandlerContext channelHandlerContext, ResultInfo resultInfo){
         if(channelHandlerContext!=null){
-           return  channelHandlerContext.writeAndFlush(resultInfo);
+            return  channelHandlerContext.writeAndFlush(resultInfo);
         }
         System.out.println("channelHandlerContext is null");
         return null;

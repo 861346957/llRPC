@@ -25,7 +25,7 @@ public interface ClientConstant {
     Integer CHANNEL_OPEN=1;
     Integer CHANNEL_CLOSE=2;
     Integer DEFAULT_THRESHOLD=100;
-    Long DEFAULT_THREAD_EXPIRE_TIME=10*1000L;
+    Long DEFAULT_THREAD_EXPIRE_TIME=10L;
     Integer DEFAULT_READ_WRITE_TIME=60;
     Integer IS_CONFIRM =1;
     Integer NO_CONFIRM=0;
@@ -33,4 +33,5 @@ public interface ClientConstant {
     Long WAIT_ACK_TIME=15*1000L;
     Long RETRY_MESSAGE_TIME=3000L;
     Long METHOD_WAIT_TIME=1000L*60*60*6;
+    //Long METHOD_WAIT_TIME=1000L*5;
 }

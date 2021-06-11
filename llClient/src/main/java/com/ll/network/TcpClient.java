@@ -97,10 +97,11 @@ public class TcpClient {
         if(!beanInfo.getHeartbeat() && instance.isConfirm() && isAckResult){
             instance.addNoAckResult(beanInfo.getId(),new ConfirmMessage(this,beanInfo));
         }
+        beanInfo.setCreateTime(TimeCacheUtils.getCacheTime());
         if(!StringUtils.isEmpty(beanInfo.getId())){
             ResultContext.getInstance().addLock(beanInfo.getId(),new Object());
         }
-        ChannelFuture future = sendMessageAndCreateTime(beanInfo);
+        ChannelFuture future = sendMessageByBeanInfo(beanInfo);
         if(!beanInfo.getHeartbeat() && instance.isConfirm()){
             future.addListener(new ChannelFutureListener(){
                 @Override
@@ -123,8 +124,7 @@ public class TcpClient {
 
         }
     }
-    public ChannelFuture sendMessageAndCreateTime(BeanInfo beanInfo){
-        beanInfo.setCreateTime(TimeCacheUtils.getCacheTime());
+    public ChannelFuture sendMessageByBeanInfo(BeanInfo beanInfo){
         return this.channel.writeAndFlush(beanInfo);
     }
 }

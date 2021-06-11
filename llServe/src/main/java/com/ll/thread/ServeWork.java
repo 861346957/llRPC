@@ -21,9 +21,11 @@ public class ServeWork extends Thread {
     private static Count count = new Count();
     private Thread thread;
     private ThreadFactory threadFactory;
+    private ServeThreadPool serveThreadPool;
     private static Logger logger = LoggerFactory.getLogger(ServeWork.class);
-    public ServeWork(ThreadFactory threadFactory) {
+    public ServeWork(ThreadFactory threadFactory,ServeThreadPool serveThreadPool) {
         this.threadFactory = threadFactory;
+        this.serveThreadPool = serveThreadPool;
         thread = initThread();
     }
 
@@ -41,7 +43,9 @@ public class ServeWork extends Thread {
             }
 
         } catch (InterruptedException e) {
-            logger.info("thread is close");
+            Thread t=Thread.currentThread();
+            serveThreadPool.closeTask(t);
+            logger.info("thread is close;this:"+t.getName());
         }
 
     }

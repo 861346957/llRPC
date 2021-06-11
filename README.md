@@ -86,7 +86,7 @@ lls.coreSize(处理消息的线程数)
 lls.maxCoreSize(处理消息的最大线程数)
 默认核心数*2-1
 
-lls.threadExpireTime(线程超时时间，单位毫秒)
+lls.threadExpireTime(线程超时时间，单位秒)
 默认10秒，当线程数超过处理消息的线程数时，线程空闲超过超时时间时，关闭超过
 
 lls.threshold(任务阈值，当堆积的任务数超过该阈值时开启线程，直到线程数到最大线程数)

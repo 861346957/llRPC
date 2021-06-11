@@ -27,9 +27,6 @@ public class ServeLock {
     public void setWait() throws InterruptedException {
         synchronized (serveLock){
             ThreadContext.getInstance().compareAndSet(System.currentTimeMillis());
-            if (ThreadContext.getInstance().isOverTime() && ThreadContext.getInstance().isClose()) {
-                throw new InterruptedException();
-            }
             this.isWait = true;
             serveLock.wait();
         }
@@ -37,10 +34,10 @@ public class ServeLock {
     }
     public void notifyWait()  {
         synchronized (serveLock){
-           if(isWait){
-               serveLock.notifyAll();
-               this.isWait=false;
-           }
+            if(isWait){
+                serveLock.notifyAll();
+                this.isWait=false;
+            }
         }
 
     }

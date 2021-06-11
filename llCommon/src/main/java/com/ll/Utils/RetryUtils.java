@@ -24,15 +24,13 @@ public class RetryUtils<T> {
         Long startTime=System.currentTimeMillis();
         for (int i = 1; i <= count; i++) {
             if(startTime+timeOutLong<System.currentTimeMillis()){
-                logger.info("retry is overTime");
-                break;
+                throw new RuntimeException("retry is overTime");
             }
             if(retry.logic()){
                 break;
             }
             if(i==count){
-                logger.info("retry count already expired");
-                break;
+                throw new RuntimeException("retry count already expired");
             }
             if(awaitTime!=null){
                 try {
@@ -77,10 +75,10 @@ public class RetryUtils<T> {
         }
         return null;
     }
-   public interface Retry{
-       boolean logic();
-   }
-   public interface ObjectRetry<T>{
+    public interface Retry{
+        boolean logic();
+    }
+    public interface ObjectRetry<T>{
         T logic();
-   }
+    }
 }

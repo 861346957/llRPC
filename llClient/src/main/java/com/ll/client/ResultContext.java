@@ -3,7 +3,6 @@ package com.ll.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.constant.ClientConstant;
 import com.ll.entity.ResultInfo;
-import com.ll.network.TcpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,13 @@ public final class ResultContext {
         lockMap.put(id,lock);
     }
     public Object removeLock(String id){
-        return lockMap.remove(id);
+        Object lock = getLock(id);
+        synchronized (lock){
+            if( !map.containsKey(id)){
+                return lockMap.remove(id);
+            }
+        }
+        return null;
     }
     public Object getLock(String id){
         return lockMap.get(id);
@@ -64,30 +69,11 @@ public final class ResultContext {
             } catch (InterruptedException e) {
                 log.info("getResult thread is interrupted");
             }
-
-        }
-        if(map.containsKey(id)){
-            removeLock(id);
-            return map.remove(id);
+            if(map.containsKey(id)){
+                removeLock(id);
+                return map.remove(id);
+            }
         }
         return ResultInfo.getErrorResultInfo(id,id+":method is overTime");
-//        Long start= TimeCacheUtils.getCacheTime();
-//        Long second=100L;
-//        while (start+second>TimeCacheUtils.getCacheTime()){
-//            if(map.containsKey(id)){
-//                return map.remove(id);
-//            }
-//        }
-//        for (;;){
-//            if(map.containsKey(id)){
-//               return map.remove(id);
-//            }
-//            client.whetherConnect();
-//            try {
-//                TimeUnit.MILLISECONDS.sleep(100);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 }
